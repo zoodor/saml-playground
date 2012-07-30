@@ -1,4 +1,8 @@
 *.class
+*.idea
+target/*
+.DS_Store
+*.swp
 
 # Package Files #
 *.jar
