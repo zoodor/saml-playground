@@ -1,0 +1,18 @@
+GEM
+  remote: http://rubygems.org/
+  specs:
+    canonix (0.1.5)
+    macaddr (1.6.1)
+      systemu (~> 2.5.0)
+    ruby-saml (0.5.3)
+      canonix (~> 0.1)
+      uuid (~> 2.3)
+    systemu (2.5.2)
+    uuid (2.3.5)
+      macaddr (~> 1.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  ruby-saml
