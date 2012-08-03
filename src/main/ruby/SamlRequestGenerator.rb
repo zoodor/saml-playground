@@ -1,8 +1,11 @@
 require "rubygems"
 require "bundler/setup"
 require "ruby-saml"
+require "net/http"
+require "base64"
+require "htmlentities"
 
-request = Onelogin::Saml::Authrequest.new
+saml_authentication_request = Onelogin::Saml::Authrequest.new
 
 def saml_settings
   settings = Onelogin::Saml::Settings.new
@@ -20,6 +23,18 @@ def saml_settings
   settings
 end
 
-created_request = request.create(saml_settings)
+saml = saml_authentication_request.create_authentication_xml_doc(saml_settings)
+saml_string = ""
+saml.write(saml_string)
 
-puts created_request.inspect
+proxy_addr = 'localhost'
+proxy_port = 8888
+
+proxy_class = Net::HTTP::Proxy(proxy_addr, proxy_port)
+proxy_class.start('localhost:8080') {|http|
+  request = Net::HTTP::Post.new('/saml-receiver')
+  puts "SAML to send: #{saml_string}"
+  request.form_data =  {'SAMLRequest'=>Base64.encode64(HTMLEntities.new.encode(saml_string))}
+  postData = http.request(request)
+  puts postData.body
+}

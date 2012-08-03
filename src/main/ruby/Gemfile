@@ -1,2 +1,4 @@
 source "http://rubygems.org"
-gem 'ruby-saml'
+gem 'ruby-saml',
+    :path => "../../../../ruby-saml/"
+gem 'htmlentities'
