@@ -16,6 +16,7 @@ def saml_settings
   settings.issuer                         = 'https://sp.example.com/SAML2'
   settings.idp_sso_target_url             = "https://idp.example.com/saml/signon/blah"
   #settings.idp_cert_fingerprint           = OneLoginAppCertFingerPrint
+  settings.idp_cert_fingerprint = "<signing-key-public-key>"
   settings.name_identifier_format         = "urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
   # Optional for most SAML IdPs
   #settings.authn_context = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport"
@@ -30,6 +31,8 @@ saml.write(saml_string)
 proxy_addr = 'localhost'
 proxy_port = 8888
 
+#NOTE: ruby-saml assumes that the signature element contains the signer's X509 certificate, but SAMLCore specifically states that this is optional (see 5.4.5 in SAMLCore)
+
 proxy_class = Net::HTTP::Proxy(proxy_addr, proxy_port)
 proxy_class.start('localhost:8080') {|http|
   request = Net::HTTP::Post.new('/saml-receiver')
@@ -37,4 +40,8 @@ proxy_class.start('localhost:8080') {|http|
   request.form_data =  {'SAMLRequest'=>Base64.encode64(HTMLEntities.new.encode(saml_string))}
   postData = http.request(request)
   puts postData.body
+
+  response = Onelogin::Saml::Response.new(postData.body)
+  response.settings = saml_settings
+  puts "Response is valid? #{response.validate!}"
 }
