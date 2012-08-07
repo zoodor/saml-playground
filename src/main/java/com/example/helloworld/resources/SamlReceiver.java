@@ -19,10 +19,10 @@ import org.opensaml.xml.parse.XMLParserException;
 import org.opensaml.xml.security.credential.Credential;
 import org.opensaml.xml.security.keyinfo.KeyInfoHelper;
 import org.opensaml.xml.security.x509.BasicX509Credential;
-import org.opensaml.xml.signature.KeyInfo;
+import org.opensaml.xml.signature.*;
 import org.opensaml.xml.signature.Signature;
-import org.opensaml.xml.signature.SignatureConstants;
 import org.opensaml.xml.signature.SignatureException;
+import org.opensaml.xml.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -45,6 +45,7 @@ import java.security.*;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.List;
 
 @Path("/saml-receiver")
 @Produces(MediaType.TEXT_XML)
@@ -55,7 +56,7 @@ public class SamlReceiver {
     public Document postSaml(
             @FormParam("RelayState") String relayState,
             @FormParam("SAMLRequest") String samlRequest,
-            @Context HttpServletRequest httpRequest) throws ConfigurationException, XMLParserException, UnmarshallingException, IOException, ParserConfigurationException, SAXException, MarshallingException, SignatureException, CertificateEncodingException, KeyStoreException {
+            @Context HttpServletRequest httpRequest) throws ConfigurationException, XMLParserException, UnmarshallingException, IOException, ParserConfigurationException, SAXException, MarshallingException, SignatureException, CertificateException, KeyStoreException, ValidationException {
 
         String urlDecodedSaml = URLDecoder.decode(samlRequest.replaceAll("\\r|\\n", ""), "UTF-8");
         byte[] samlBytes = Base64.decode(urlDecodedSaml);
@@ -65,7 +66,7 @@ public class SamlReceiver {
 
         DefaultBootstrap.bootstrap();
 
-        Credential credential = initializeCredentials();
+        Credential credential = getCredential();
         Document responseDocument = createSignedResponse(credential);
 
         AuthnRequest authenticationRequest = createAuthenticationRequestFromXmlString(unescapedSaml);
@@ -75,7 +76,7 @@ public class SamlReceiver {
 //        return String.format("Relay state: %s, SAMLRequest: %s, request: %s", relayState, samlRequest, httpRequest);
     }
 
-    private Credential initializeCredentials() {
+    private Credential getCredential() {
 
         Logger logger = LoggerFactory.getLogger(SamlReceiver.class);
         Signature signature = null;
@@ -105,6 +106,10 @@ public class SamlReceiver {
         return credential;
     }
 
+//    private Credential getServiceProviderCredential() {
+//
+//    }
+
     private KeyStore getKeyStore() {
         Logger logger = LoggerFactory.getLogger(SamlReceiver.class);
         String passwordString = "<saml-keystore-password>";
@@ -126,7 +131,7 @@ public class SamlReceiver {
         try {
             fis = new FileInputStream(fileName);
         } catch (FileNotFoundException e) {
-            logger.error("Unable to found KeyStore with the given keystore name ::" + fileName, e);
+            logger.error("Unable to found KeyStore with the given keystoere name ::" + fileName, e);
         }
 
         // Load KeyStore
@@ -221,16 +226,15 @@ public class SamlReceiver {
         return document;
     }
 
-    private AuthnRequest createAuthenticationRequestFromXmlString(String xmlString) throws ConfigurationException, ParserConfigurationException, SAXException, IOException, UnmarshallingException {
+    private AuthnRequest createAuthenticationRequestFromXmlString(String xmlString) throws ConfigurationException, ParserConfigurationException, SAXException, IOException, UnmarshallingException, ValidationException, CertificateException {
         // Initialize the library
-        DefaultBootstrap.bootstrap();
+//        DefaultBootstrap.bootstrap();
 
         // Get parser pool manager
         BasicParserPool ppMgr = new BasicParserPool();
         ppMgr.setNamespaceAware(true);
 
-        DocumentBuilderFactory factory =
-                DocumentBuilderFactory.newInstance ();
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware (true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         Element samlRootElement = builder.parse(new ByteArrayInputStream(xmlString.getBytes())).getDocumentElement();
@@ -239,7 +243,22 @@ public class SamlReceiver {
         UnmarshallerFactory unmarshallerFactory = Configuration.getUnmarshallerFactory();
         Unmarshaller unmarshaller = unmarshallerFactory.getUnmarshaller(samlRootElement);
 
+
         // Unmarshall using the document root element
-        return (AuthnRequest) unmarshaller.unmarshall(samlRootElement);
+        AuthnRequest request = (AuthnRequest) unmarshaller.unmarshall(samlRootElement);
+
+        Signature signature = request.getSignature();
+        KeyInfo keyInfo = signature.getKeyInfo();
+        List<X509Data> x509Datas = keyInfo.getX509Datas();
+        X509Data x509Data = x509Datas.get(0);
+        BasicX509Credential credential = new BasicX509Credential();
+        X509Certificate certificateFromSignature = KeyInfoHelper.getCertificate(x509Data.getX509Certificates().get(0));
+        credential.setEntityCertificate(certificateFromSignature);
+//        Credential credential = getCredential();
+
+        SignatureValidator signatureValidator = new SignatureValidator(credential);
+        signatureValidator.validate(signature);
+
+        return request;
     }
 }
