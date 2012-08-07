@@ -4,6 +4,7 @@ require "ruby-saml"
 require "net/http"
 require "base64"
 require "htmlentities"
+require "xmlsig"
 
 saml_authentication_request = Onelogin::Saml::Authrequest.new
 
@@ -31,17 +32,45 @@ saml.write(saml_string)
 proxy_addr = 'localhost'
 proxy_port = 8888
 
+doc = Xmlsig::XmlDoc.new()
+doc.loadFromString(saml_string)
+
+key = Xmlsig::Key.new()
+#key.loadFromFile('<path-on-your-machine>/my_saml_signing_key.txt.pub.cer', 'cert_pem', '')#doesn't work
+key.loadFromFile('<path-on-your-machine>/private.pem', 'pem', '')#works
+#key.loadFromFile('<path-on-your-machine>/trunk/ruby/t/res/tsik/keys/Alice.cer', 'cert_der', 'password')#doesn't work
+#key.loadFromFile('<path-on-your-machine>/trunk/ruby/t/res/tsik/keys/alice.pfx', 'pkcs12', 'password')#works
+signer = Xmlsig::Signer.new(doc, key)
+#signer.addCertFromFile('<path-on-your-machine>/public.pem', 'pem')
+#signer.attachPublicKey(1)
+#x509key = Xmlsig::Key.new
+#x509key.loadFromFile('<path-on-your-machine>/cacert.pem', 'cert_pem', '')
+#x509cert = x509key.getCertificate()
+x509cert = Xmlsig::X509Certificate.new()
+certLoadResult = x509cert.loadFromFile('<path-on-your-machine>/cacert.pem', 'cert_pem')
+#puts "X509 cert: #{x509cert.getVersion()}"
+signer.addCert(x509cert)
+signature_xpath = Xmlsig::XPath.new()
+signature_xpath.addNamespace('samlp', 'urn:oasis:names:tc:SAML:2.0:protocol')
+signature_xpath.setXPath('/samlp:AuthnRequest/samlp:NameIDPolicy')
+
+signer.useExclusiveCanonicalizer('')
+signer.signInPlace(signature_xpath, true)
+saml_string = doc.toString()
+
 #NOTE: ruby-saml assumes that the signature element contains the signer's X509 certificate, but SAMLCore specifically states that this is optional (see 5.4.5 in SAMLCore)
 
 proxy_class = Net::HTTP::Proxy(proxy_addr, proxy_port)
 proxy_class.start('localhost:8080') {|http|
   request = Net::HTTP::Post.new('/saml-receiver')
-  puts "SAML to send: #{saml_string}"
+
+  puts "SAML to send:\n#{saml_string}"
   request.form_data =  {'SAMLRequest'=>Base64.encode64(HTMLEntities.new.encode(saml_string))}
+
   postData = http.request(request)
-  puts postData.body
+  puts "\n\nSigned Response:\n#{postData.body}"
 
   response = Onelogin::Saml::Response.new(postData.body)
   response.settings = saml_settings
-  puts "Response is valid? #{response.validate!}"
+  puts "\n\nResponse is valid? #{response.validate!}"
 }
