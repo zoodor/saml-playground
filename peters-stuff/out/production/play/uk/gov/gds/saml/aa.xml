@@ -1,0 +1,44 @@
+<saml2p:Response xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol" ID="res" Version="2.0">
+    <saml2:EncryptedAssertion xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">
+        <xenc:EncryptedData xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" Id="_0b89b05f222dba18aeb0eb6f7ed127d2"
+                            Type="http://www.w3.org/2001/04/xmlenc#Element">
+            <xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"
+                                   xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"/>
+            <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+                <ds:RetrievalMethod Type="http://www.w3.org/2001/04/xmlenc#EncryptedKey"
+                                    URI="#_d9781069358dc071a48da538531e83d2"/>
+            </ds:KeyInfo>
+            <xenc:CipherData xmlns:xenc="http://www.w3.org/2001/04/xmlenc#">
+                <xenc:CipherValue>
+                    HTgsBje5VOYaN+areMdRvytiITu+jA6GQSMOZRUvv9QRzMR9w2lWaB0dJpoHj3DjnsO5iIOQtb9qq/wppPPwNKwnTWkaTSSBvq+cgbuHLZ+uxznBhaWyXFrm7HpKrSXtHC9TcCFyjSGwDPSh1orhC+r3rfPr8zuaA8VjeYVA4Y2bmD0/XLb0YBJW04vzugnDdJvagsv3UNjWly9Z/5aaKLMkkSxYcfoAkAeY3eCTBI2TGffGBiOSeWCpuGO4RJyOM3qhw1WHb6LM8avdtL5raP3a1g8Ga5MY6T0iSXYegv99q00TxlMW8M0bFmvYzQQVkNlqqsAf0Zuf5pQEww8CsimCLEcHVXXJak3/+p0Or4vOuPyF9w5TiioDYznG3xh1uvOmNLXTB3PStF/cTOGMCPT0OQmP3dIE02cKvaMRWag=
+                </xenc:CipherValue>
+            </xenc:CipherData>
+        </xenc:EncryptedData>
+        <xenc:EncryptedKey xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" Id="_d9781069358dc071a48da538531e83d2">
+            <xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"
+                                   xmlns:xenc="http://www.w3.org/2001/04/xmlenc#">
+                <ds:DigestMethod xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+                                 Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+            </xenc:EncryptionMethod>
+            <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+                <ds:KeyValue>
+                    <ds:RSAKeyValue>
+                        <ds:Modulus>yz5+OTwPO6bk52BJAQzmOeh+j86cOfvbqzDxzTrqxB8XDfBOQZvahaFi1JTzMbXicqn89qFQnsCF
+                            FbzWBwVO5hdHbp0BcSQuHotxIeWOK8ogyr5Uvz9DVsL734QAnk7o1Vu/DKW3FTYOObFOFoUA4ZEj
+                            4EFAQlc94rw275+Ffgs=
+                        </ds:Modulus>
+                        <ds:Exponent>AQAB</ds:Exponent>
+                    </ds:RSAKeyValue>
+                </ds:KeyValue>
+            </ds:KeyInfo>
+            <xenc:CipherData xmlns:xenc="http://www.w3.org/2001/04/xmlenc#">
+                <xenc:CipherValue>
+                    uXc8d9tXy3Xj5iLX9IlvzeP9rAudLKegPM+dYUBlc7awLH+04nbYVIjvtv9i4ituaLiXXU95w+Q/H4MOr9FdI8KY1ad66/KXeITqCRs9IPZHTfOGZ3qSbk3O/kgdWqJ/xta461QyzhnvUNZfkbje6kSpDjlq3FW/47fOK5Txv70=
+                </xenc:CipherValue>
+            </xenc:CipherData>
+            <xenc:ReferenceList>
+                <xenc:DataReference URI="#_0b89b05f222dba18aeb0eb6f7ed127d2"/>
+            </xenc:ReferenceList>
+        </xenc:EncryptedKey>
+    </saml2:EncryptedAssertion>
+</saml2p:Response>
