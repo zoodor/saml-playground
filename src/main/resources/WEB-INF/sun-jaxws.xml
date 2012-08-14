@@ -4,6 +4,6 @@
         version="2.0">
     <endpoint
             name="HelloWorld"
-            implementation="com.example.helloworld.resources.Calculator"
+            implementation="com.example.helloworld.resources.AddNumbersService"
             url-pattern="/SOAP/add"/>
 </endpoints>

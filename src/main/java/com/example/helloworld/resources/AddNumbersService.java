@@ -1,7 +1,6 @@
 package com.example.helloworld.resources;
 
 import javax.jws.WebMethod;
-import javax.jws.WebService;
 
 @javax.jws.WebService(
         name = "AddNumbersPortType",
@@ -11,7 +10,7 @@ import javax.jws.WebService;
         style = javax.jws.soap.SOAPBinding.Style.DOCUMENT,
         use = javax.jws.soap.SOAPBinding.Use.LITERAL,
         parameterStyle = javax.jws.soap.SOAPBinding.ParameterStyle.WRAPPED)
-public class Calculator {
+public class AddNumbersService {
     @WebMethod
     public int Add(int a, int b) {
         return a + b;
