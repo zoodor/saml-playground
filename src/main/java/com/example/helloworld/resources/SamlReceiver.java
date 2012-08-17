@@ -76,10 +76,9 @@ public class SamlReceiver {
 //        return String.format("Relay state: %s, SAMLRequest: %s, request: %s", relayState, samlRequest, httpRequest);
     }
 
-    private Credential getCredential() {
+    public static Credential getCredential() {
 
         Logger logger = LoggerFactory.getLogger(SamlReceiver.class);
-        Signature signature = null;
         String certificateAliasName = "<saml-signing-key-alias>";
         KeyStore ks = getKeyStore();
 
@@ -110,7 +109,7 @@ public class SamlReceiver {
 //
 //    }
 
-    private KeyStore getKeyStore() {
+    public static KeyStore getKeyStore() {
         Logger logger = LoggerFactory.getLogger(SamlReceiver.class);
         String passwordString = "<saml-keystore-password>";
         String fileName = "<path-to-saml-keystore-file>";
@@ -227,8 +226,6 @@ public class SamlReceiver {
     }
 
     private AuthnRequest createAuthenticationRequestFromXmlString(String xmlString) throws ConfigurationException, ParserConfigurationException, SAXException, IOException, UnmarshallingException, ValidationException, CertificateException {
-        // Initialize the library
-//        DefaultBootstrap.bootstrap();
 
         // Get parser pool manager
         BasicParserPool ppMgr = new BasicParserPool();

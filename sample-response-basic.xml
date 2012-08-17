@@ -1,0 +1,26 @@
+<samlp:Response
+        xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+        xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+        ID="identifier_2"
+        Version="2.0"
+        IssueInstant="2004-12-05T09:22:05">
+  <!-- Response signature goes here... -->
+  <samlp:Status>
+    <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/>
+  </samlp:Status>
+  <saml:Assertion
+          xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+          ID="identifier_3"
+          Version="2.0"
+          IssueInstant="2004-12-05T09:22:05">
+    <saml:Issuer>https://idp.example.org/SAML2</saml:Issuer>
+    <!-- a POSTed assertion MUST be signed -->
+    <!-- Assertion signature goes here... -->
+    <saml:Subject>
+      <saml:NameID
+              Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient">
+        3f7b3dcf-1674-4ecd-92c8-1544f346baf8
+      </saml:NameID>
+    </saml:Subject>
+  </saml:Assertion>
+</samlp:Response>

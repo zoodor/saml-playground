@@ -4,6 +4,7 @@ import com.example.helloworld.health.TemplateHealthCheck;
 import com.example.helloworld.resources.HelloWorldResource;
 import com.example.helloworld.resources.SamlReceiver;
 import com.yammer.dropwizard.Bundle;
+import com.example.helloworld.resources.SamlResponseReceiver;
 import com.yammer.dropwizard.Service;
 import com.yammer.dropwizard.config.Environment;
 
@@ -33,6 +34,7 @@ public class HelloWorldService extends Service<HelloWorldConfiguration> {
         final String defaultName = configuration.getDefaultName();
         environment.addResource(new HelloWorldResource(template, defaultName));
         environment.addResource(new SamlReceiver());
+        environment.addResource(new SamlResponseReceiver());
         environment.addHealthCheck(new TemplateHealthCheck(template));
     }
 
